@@ -1,17 +1,5 @@
-// Chargement des données depuis le localStorage ou valeurs par défaut
-let appareils = JSON.parse(localStorage.getItem("appareils")) || {
-  "seche-linge": { duree: 210, type: "fin" },
-  "lave-linge": { duree: 120, type: "debut" },
-  "lave-vaisselle": { duree: 210, type: "debut" }
-};
-
-let heuresCreuses = JSON.parse(localStorage.getItem("heuresCreuses")) || [
-  { nom: "après-midi", debut: 14 * 60 + 50, fin: 16 * 60 + 50 },
-  { nom: "nuit", debut: 1 * 60 + 50, fin: 7 * 60 + 50 }
-];
-
 function toMinutes(timeStr) {
-  const [h, m] = timeStr.split(":").map(Number);
+  const [h, m] = timeStr.split(':').map(Number);
   return h * 60 + m;
 }
 
@@ -19,109 +7,106 @@ function formatHeure(mins) {
   mins = ((mins % 1440) + 1440) % 1440;
   const heures = Math.floor(mins / 60);
   const minutes = mins % 60;
-  return `${heures.toString().padStart(2, "0")}h${minutes.toString().padStart(2, "0")}`;
+  return `${heures.toString().padStart(2,'0')}h${minutes.toString().padStart(2,'0')}`;
 }
 
-function getProchainePlage(nowMins) {
-  const plagesTriees = [...heuresCreuses].map(plage => {
-    const debut = plage.debut;
-    const fin = plage.fin < debut ? plage.fin + 1440 : plage.fin;
-    const start = debut < nowMins ? debut + 1440 : debut;
-    return { ...plage, debut, fin, start };
-  }).sort((a, b) => a.start - b.start);
+function chargerConfig() {
+  if (!localStorage.getItem("appareils")) {
+    localStorage.setItem("appareils", JSON.stringify({
+      "seche-linge": { duree: 210, type: "fin" },
+      "lave-linge": { duree: 120, type: "debut" },
+      "lave-vaisselle": { duree: 210, type: "debut" }
+    }));
+  }
 
-  return plagesTriees[0];
+  if (!localStorage.getItem("heuresCreuses")) {
+    localStorage.setItem("heuresCreuses", JSON.stringify([
+      { nom: "après-midi", debut: 14 * 60 + 50, fin: 16 * 60 + 50 },
+      { nom: "nuit", debut: 1 * 60 + 50, fin: 7 * 60 + 50 }
+    ]));
+  }
+
+  return {
+    appareils: JSON.parse(localStorage.getItem("appareils")),
+    heuresCreuses: JSON.parse(localStorage.getItem("heuresCreuses"))
+  };
+}
+
+function getProchainePlage(nowMins, hcList) {
+  const sorted = [...hcList].sort((a, b) => a.debut - b.debut);
+  for (let plage of sorted) {
+    const debut = plage.debut;
+    const fin = plage.fin > plage.debut ? plage.fin : plage.fin + 1440;
+    if (nowMins < debut) return plage;
+  }
+  return sorted[0]; // prochaine dispo après minuit
 }
 
 function calculer() {
-  const appareil = document.getElementById("appareil").value;
-  const { duree, type } = appareils[appareil];
+  const { appareils, heuresCreuses } = chargerConfig();
+  const appareilId = document.getElementById("appareil").value;
+  const { duree, type } = appareils[appareilId];
   const nowMins = toMinutes(document.getElementById("horaire").value);
-  const plage = getProchainePlage(nowMins);
+  const plage = getProchainePlage(nowMins, heuresCreuses);
 
-  const hcStart = plage.debut < nowMins ? plage.debut + 1440 : plage.debut;
-  const hcEnd = plage.fin < hcStart ? plage.fin + 1440 : plage.fin;
+  const hcStart = plage.debut;
+  const hcEnd = plage.fin > plage.debut ? plage.fin : plage.fin + 1440;
 
-  let meilleur;
+  let resultat = null;
 
   if (type === "fin") {
-    let maxFin = hcEnd;
-    let meilleurTempsHC = -1;
-    let meilleurH = 0;
-
-    for (let h = 1; h <= 24; h++) {
-      const finReelle = nowMins + h * 60;
-      const debutReel = finReelle - duree;
-      const tempsHC = Math.max(0, Math.min(finReelle, hcEnd) - Math.max(debutReel, hcStart));
-
-      if (tempsHC > meilleurTempsHC) {
-        meilleurTempsHC = tempsHC;
-        meilleurH = h;
-        meilleur = {
-          debut: debutReel % 1440,
-          fin: finReelle % 1440,
-          heures: h,
-          tempsHC
-        };
+    for (let h = 1; h <= 12; h++) {
+      const fin = nowMins + h * 60;
+      const debut = fin - duree;
+      const overlap = Math.max(0, Math.min(fin, hcEnd) - Math.max(debut, hcStart));
+      if (!resultat || overlap > resultat.tempsHC) {
+        resultat = { heures: h, tempsHC: overlap, debut, fin };
       }
     }
   } else {
-    let meilleurTempsHC = -1;
-    let meilleurH = 0;
-
-    for (let h = 1; h <= 24; h++) {
-      const debutReel = nowMins + h * 60;
-      const finReel = debutReel + duree;
-      const tempsHC = Math.max(0, Math.min(finReel, hcEnd) - Math.max(debutReel, hcStart));
-
-      if (tempsHC > meilleurTempsHC) {
-        meilleurTempsHC = tempsHC;
-        meilleurH = h;
-        meilleur = {
-          debut: debutReel % 1440,
-          fin: finReel % 1440,
-          heures: h,
-          tempsHC
-        };
+    for (let h = 1; h <= 12; h++) {
+      const debut = nowMins + h * 60;
+      const fin = debut + duree;
+      const overlap = Math.max(0, Math.min(fin, hcEnd) - Math.max(debut, hcStart));
+      if (!resultat || overlap > resultat.tempsHC) {
+        resultat = { heures: h, tempsHC: overlap, debut, fin };
       }
     }
   }
 
-  afficherResultat(meilleur, appareil);
-}
-
-function afficherResultat(resultat, appareil) {
   const res = document.getElementById("resultat");
-  const dureeTotale = appareils[appareil].duree;
-  const taux = ((resultat.tempsHC / dureeTotale) * 100).toFixed(1);
-
-  res.innerHTML = resultat.tempsHC > 0 ? `
-    <b>Programmez ${resultat.heures}h</b><br>
-    Début : ${formatHeure(resultat.debut)}<br>
-    Fin : ${formatHeure(resultat.fin)}<br>
-    <i>${taux}% du cycle en heures creuses</i>
-  ` : "Aucun créneau disponible dans la prochaine plage HC.";
+  if (resultat.tempsHC > 0) {
+    const pct = ((resultat.tempsHC / duree) * 100).toFixed(1);
+    res.innerHTML = `
+      <b>Programmez ${resultat.heures}h</b><br>
+      Début : ${formatHeure(resultat.debut)}<br>
+      Fin : ${formatHeure(resultat.fin)}<br>
+      <i>${pct}% du cycle en heures creuses</i>
+    `;
+  } else {
+    res.innerHTML = "Aucun créneau viable dans la prochaine plage HC";
+  }
 }
 
-window.onload = function () {
-  const now = new Date();
-  document.getElementById("horaire").value =
-    `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+function chargerInterface() {
+  const { appareils, heuresCreuses } = chargerConfig();
 
   const select = document.getElementById("appareil");
-  select.innerHTML = "";
-  for (const key in appareils) {
+  for (let nom in appareils) {
     const opt = document.createElement("option");
-    opt.value = key;
-    const type = appareils[key].type === "fin" ? "fin" : "début";
-    opt.textContent = `${key} (${appareils[key].duree / 60}h, ${type})`;
+    opt.value = nom;
+    opt.textContent = nom;
     select.appendChild(opt);
   }
 
-  const hcList = document.getElementById("heures-creuses");
-  if (hcList) {
-    hcList.innerHTML = "<b>Heures creuses :</b><br>" + heuresCreuses.map(hc => {
-      return `${hc.nom} : ${formatHeure(hc.debut)} - ${formatHeure(hc.fin)}`;
-    }).join("<br>");
-  }
-};
+  const now = new Date();
+  const pad = n => n.toString().padStart(2, '0');
+  document.getElementById("horaire").value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  const infoDiv = document.getElementById("hcInfo");
+  infoDiv.innerHTML = heuresCreuses.map(p => {
+    return `• ${p.nom}: ${formatHeure(p.debut)} – ${formatHeure(p.fin)}`;
+  }).join("<br>");
+}
+
+window.addEventListener("DOMContentLoaded", chargerInterface);
