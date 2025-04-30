@@ -7,32 +7,32 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <nav>
+    <a href="index.html">Optimisation</a>
+    <a href="config.html">Configuration</a>
+  </nav>
+
   <h1>Configuration</h1>
+
   <div class="box">
     <h2>Appareils électroménagers</h2>
-    <div id="appareilsList"></div>
-
-    <h2>Ajouter un appareil</h2>
+    <ul id="listeAppareils"></ul>
     <input type="text" id="nomAppareil" placeholder="Nom">
     <input type="number" id="dureeAppareil" placeholder="Durée (min)">
     <select id="typeAppareil">
-      <option value="debut">Début</option>
-      <option value="fin">Fin</option>
+      <option value="debut">Programmation au début</option>
+      <option value="fin">Programmation à la fin</option>
     </select>
-    <button onclick="ajouterAppareil()">Ajouter</button>
+    <button onclick="ajouterAppareil()">Ajouter / Modifier</button>
 
     <h2>Heures Creuses</h2>
-    <div id="heuresCreusesList"></div>
-
-    <h2>Ajouter une plage</h2>
+    <ul id="listeHC"></ul>
     <input type="time" id="debutHC">
     <input type="time" id="finHC">
-    <button onclick="ajouterPlage()">Ajouter</button>
-
-    <button onclick="sauvegarder()">Enregistrer la configuration</button>
-    <a class="link" href="index.html">Retour</a>
+    <button onclick="ajouterHC()">Ajouter / Modifier</button>
   </div>
 
   <script src="config.js"></script>
+  <script src="config-page.js"></script>
 </body>
 </html>
