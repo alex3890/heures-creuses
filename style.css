@@ -1,115 +1,64 @@
-/* Global settings */
 body {
   font-family: Arial, sans-serif;
-  margin: 0;
+  margin: 20px;
   padding: 0;
-  box-sizing: border-box;
-  background-color: #f4f4f4;
-}
-
-header {
-  background-color: #333;
-  color: white;
-  padding: 10px;
-  text-align: center;
+  background: #f2f2f2;
 }
 
 h1 {
-  font-size: 24px;
-  margin: 0;
+  text-align: center;
 }
 
-h2 {
+.box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+label, input, select, button {
+  display: block;
   margin: 10px 0;
+  width: 100%;
 }
 
 button {
   padding: 10px;
-  background-color: #28a745;
+  background: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
 }
 
 button:hover {
-  background-color: #218838;
-}
-
-.container {
-  width: 80%;
-  margin: 20px auto;
-}
-
-select, input[type="number"], input[type="time"] {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-}
-
-input[type="number"] {
-  width: 50%;
-}
-
-.ligne-appareil, .plage-hc {
-  margin-bottom: 15px;
+  background: #0056b3;
 }
 
 #resultat {
-  background-color: #e9ecef;
-  padding: 20px;
-  border-radius: 5px;
   margin-top: 20px;
+  padding: 15px;
+  background: #e9ecef;
+  border-radius: 5px;
 }
 
-#resultat b {
-  font-size: 18px;
+.link {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  color: #007bff;
+  text-decoration: none;
 }
 
-#horaire {
-  width: 60%;
-  display: inline-block;
+.link:hover {
+  text-decoration: underline;
 }
 
-#horaire + span {
-  font-weight: bold;
-  font-size: 16px;
-  margin-left: 20px;
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .container {
-    width: 90%;
-  }
-
-  #horaire {
-    width: 80%;
-  }
-
-  input[type="number"] {
-    width: 70%;
-  }
-
-  .ligne-appareil, .plage-hc {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-@media (max-width: 480px) {
-  h1 {
-    font-size: 20px;
-  }
-
-  button {
-    width: 100%;
-    font-size: 16px;
-  }
-
-  select, input[type="number"], input[type="time"] {
-    width: 100%;
-  }
+.hc-info {
+  margin: 10px 0;
+  padding: 10px;
+  background: #d4edda;
+  border-radius: 5px;
+  font-size: 14px;
 }
