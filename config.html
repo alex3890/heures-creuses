@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Configuration</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <nav>
-    <a href="index.html">Optimisation</a>
-    <a href="config.html">Configuration</a>
-  </nav>
+  <header>
+    <h1>Configuration</h1>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="config.html">Configuration</a>
+    </nav>
+  </header>
 
-  <h1>Configuration</h1>
-
-  <div class="box">
-    <h2>Appareils électroménagers</h2>
-    <ul id="listeAppareils"></ul>
-    <input type="text" id="nomAppareil" placeholder="Nom">
-    <input type="number" id="dureeAppareil" placeholder="Durée (min)">
+  <main>
+    <h2>Appareils</h2>
+    <div id="liste-appareils"></div>
+    <h3>Ajouter / Modifier</h3>
+    <input type="text" id="nomAppareil" placeholder="Nom" />
+    <input type="number" id="dureeAppareil" placeholder="Durée (min)" />
     <select id="typeAppareil">
-      <option value="debut">Programmation au début</option>
-      <option value="fin">Programmation à la fin</option>
+      <option value="debut">Début</option>
+      <option value="fin">Fin</option>
     </select>
-    <button onclick="ajouterAppareil()">Ajouter / Modifier</button>
+    <button onclick="ajouterAppareil()">Enregistrer</button>
 
+    <hr />
     <h2>Heures Creuses</h2>
-    <ul id="listeHC"></ul>
-    <input type="time" id="debutHC">
-    <input type="time" id="finHC">
-    <button onclick="ajouterHC()">Ajouter / Modifier</button>
-  </div>
+    <div id="liste-hc"></div>
+    <h3>Ajouter / Modifier</h3>
+    <input type="text" id="nomHC" placeholder="Nom" />
+    <input type="time" id="debutHC" />
+    <input type="time" id="finHC" />
+    <button onclick="ajouterHC()">Enregistrer</button>
+  </main>
 
   <script src="config.js"></script>
   <script src="config-page.js"></script>
