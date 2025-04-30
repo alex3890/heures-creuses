@@ -1,63 +1,115 @@
+/* Global settings */
 body {
   font-family: Arial, sans-serif;
-  max-width: 700px;
-  margin: 20px auto;
-  padding: 0 15px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #f4f4f4;
 }
 
-nav {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
+header {
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  text-align: center;
 }
 
-nav a {
-  text-decoration: none;
-  color: #007bff;
-  font-weight: bold;
+h1 {
+  font-size: 24px;
+  margin: 0;
 }
 
-.box {
-  background: #f9f9f9;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-input, select, button {
-  font-size: 1rem;
-  margin: 5px 0;
-  padding: 5px;
-  width: 100%;
-  max-width: 300px;
+h2 {
+  margin: 10px 0;
 }
 
 button {
-  background: #28a745;
+  padding: 10px;
+  background-color: #28a745;
   color: white;
   border: none;
-  padding: 10px;
+  border-radius: 5px;
   cursor: pointer;
-  border-radius: 6px;
 }
 
 button:hover {
-  background: #218838;
+  background-color: #218838;
+}
+
+.container {
+  width: 80%;
+  margin: 20px auto;
+}
+
+select, input[type="number"], input[type="time"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+input[type="number"] {
+  width: 50%;
+}
+
+.ligne-appareil, .plage-hc {
+  margin-bottom: 15px;
 }
 
 #resultat {
-  margin-top: 20px;
-  padding: 15px;
-  background: #e9ecef;
+  background-color: #e9ecef;
+  padding: 20px;
   border-radius: 5px;
+  margin-top: 20px;
 }
 
-.encart {
-  margin-top: 10px;
-  background: #fff3cd;
-  padding: 10px;
-  border-left: 4px solid #ffc107;
-  border-radius: 5px;
-  font-size: 0.9rem;
+#resultat b {
+  font-size: 18px;
+}
+
+#horaire {
+  width: 60%;
+  display: inline-block;
+}
+
+#horaire + span {
+  font-weight: bold;
+  font-size: 16px;
+  margin-left: 20px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+  }
+
+  #horaire {
+    width: 80%;
+  }
+
+  input[type="number"] {
+    width: 70%;
+  }
+
+  .ligne-appareil, .plage-hc {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 20px;
+  }
+
+  button {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  select, input[type="number"], input[type="time"] {
+    width: 100%;
+  }
 }
