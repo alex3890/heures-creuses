@@ -2,25 +2,44 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Optimiseur d'heures creuses</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Optimiseur d'Heures Creuses EDF</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Optimiseur d'heures creuses EDF</h1>
-  <div class="box">
-    <label for="appareil">Appareil :</label>
-    <select id="appareil"></select>
+  <header>
+    <h1>Optimiseur d'Heures Creuses EDF</h1>
+    <nav>
+      <a href="config.html">Configurer les appareils</a>
+    </nav>
+  </header>
 
-    <label for="horaire">Heure actuelle :</label>
-    <input type="time" id="horaire" step="300">
+  <main>
+    <div class="box">
+      <label for="appareil">Choisissez un appareil :</label>
+      <select id="appareil">
+        <option value="seche-linge">Sèche-linge (3h30, fin)</option>
+        <option value="lave-linge">Lave-linge (2h, début)</option>
+        <option value="lave-vaisselle">Lave-vaisselle (3h30, début)</option>
+      </select>
+      
+      <label for="horaire">Heure actuelle :</label>
+      <input type="time" id="horaire" step="300">
+      <!-- Affichage de l'heure actuelle -->
+<div id="current-time" style="margin-top: 10px; font-size: 16px;"></div>
 
-    <div class="hc-info" id="hcInfo"></div>
+      <button onclick="calculer()">Calculer</button>
 
-    <button onclick="calculer()">Calculer</button>
-    <div id="resultat"></div>
-    <a class="link" href="config.html">Configurer appareils et heures creuses</a>
-  </div>
+      <div id="resultat"></div>
+      <div class="hc-info" id="hc-info">
+        <strong>Plages d'heures creuses :</strong>
+        <ul>
+          <li>Après-midi : 14h50 - 16h50</li>
+          <li>Nuit : 01h50 - 07h50</li>
+        </ul>
+      </div>
+    </div>
+  </main>
 
   <script src="script.js"></script>
 </body>

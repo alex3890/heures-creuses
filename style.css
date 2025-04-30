@@ -1,64 +1,94 @@
 body {
   font-family: Arial, sans-serif;
-  margin: 20px;
+  margin: 0;
   padding: 0;
-  background: #f2f2f2;
+  background: #f9f9f9;
+  color: #333;
 }
 
-h1 {
-  text-align: center;
+header {
+  background-color: #0074D9;
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.box {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 500px;
+header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+main {
+  padding: 1rem;
+  max-width: 800px;
   margin: auto;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-label, input, select, button {
+label {
   display: block;
-  margin: 10px 0;
+  margin-top: 1rem;
+}
+
+input, select, button {
   width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 button {
-  padding: 10px;
-  background: #007bff;
+  background-color: #0074D9;
   color: white;
   border: none;
-  border-radius: 5px;
+  margin-top: 1rem;
+  cursor: pointer;
 }
 
 button:hover {
-  background: #0056b3;
+  background-color: #005fa3;
 }
 
 #resultat {
-  margin-top: 20px;
-  padding: 15px;
-  background: #e9ecef;
-  border-radius: 5px;
-}
-
-.link {
-  display: block;
-  text-align: center;
-  margin-top: 20px;
-  color: #007bff;
-  text-decoration: none;
-}
-
-.link:hover {
-  text-decoration: underline;
+  margin-top: 1rem;
+  background: #e0f7fa;
+  padding: 1rem;
+  border-radius: 4px;
+  font-weight: bold;
 }
 
 .hc-info {
-  margin: 10px 0;
-  padding: 10px;
-  background: #d4edda;
-  border-radius: 5px;
-  font-size: 14px;
+  margin-top: 1rem;
+  background: #f1f1f1;
+  padding: 0.75rem;
+  border-left: 4px solid #0074D9;
+  font-size: 0.9rem;
+  border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  header h1 {
+    font-size: 1.2rem;
+  }
+
+  nav a {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
 }
