@@ -1,67 +1,77 @@
-function saveConfig() {
-  const appareils = {};
-  const lignes = document.querySelectorAll(".ligne-appareil");
-  lignes.forEach(ligne => {
-    const nom = ligne.querySelector(".nom").value.trim();
-    const duree = parseInt(ligne.querySelector(".duree").value.trim(), 10);
-    const type = ligne.querySelector(".type").value;
-    if (nom && !isNaN(duree)) {
-      appareils[nom] = { duree, type };
-    }
-  });
-
-  const heuresCreuses = [];
-  const plages = document.querySelectorAll(".plage-hc");
-  plages.forEach(p => {
-    const nom = p.querySelector(".nom-hc").value.trim();
-    const debut = toMinutes(p.querySelector(".debut").value);
-    const fin = toMinutes(p.querySelector(".fin").value);
-    if (nom && !isNaN(debut) && !isNaN(fin)) {
-      heuresCreuses.push({ nom, debut, fin });
-    }
-  });
-
-  localStorage.setItem("appareils", JSON.stringify(appareils));
-  localStorage.setItem("heuresCreuses", JSON.stringify(heuresCreuses));
-  alert("Configuration enregistrée !");
-}
-
-function toMinutes(timeStr) {
-  const [h, m] = timeStr.split(":").map(Number);
+function toMinutes(t) {
+  const [h, m] = t.split(":").map(Number);
   return h * 60 + m;
 }
 
-function formatTime(mins) {
-  const h = Math.floor(mins / 60).toString().padStart(2, "0");
-  const m = (mins % 60).toString().padStart(2, "0");
-  return `${h}:${m}`;
+function formatHeure(m) {
+  m = (m + 1440) % 1440;
+  const h = Math.floor(m / 60);
+  const min = m % 60;
+  return `${h.toString().padStart(2, '0')}h${min.toString().padStart(2, '0')}`;
 }
 
-window.onload = function () {
-  const appareils = JSON.parse(localStorage.getItem("appareils")) || {};
-  const heuresCreuses = JSON.parse(localStorage.getItem("heuresCreuses")) || [];
-
-  const appareilsDiv = document.getElementById("appareils");
-  for (const nom in appareils) {
-    const { duree, type } = appareils[nom];
-    appareilsDiv.innerHTML += `
-      <div class="ligne-appareil">
-        <input class="nom" value="${nom}" placeholder="Nom">
-        <input class="duree" type="number" value="${duree}" placeholder="Durée (min)">
-        <select class="type">
-          <option value="debut" ${type === "debut" ? "selected" : ""}>Début</option>
-          <option value="fin" ${type === "fin" ? "selected" : ""}>Fin</option>
-        </select>
-      </div>`;
+function charger() {
+  if (!localStorage.getItem("appareils")) {
+    localStorage.setItem("appareils", JSON.stringify({
+      "seche-linge": { duree: 210, type: "fin" },
+      "lave-linge": { duree: 120, type: "debut" },
+      "lave-vaisselle": { duree: 210, type: "debut" }
+    }));
+  }
+  if (!localStorage.getItem("heuresCreuses")) {
+    localStorage.setItem("heuresCreuses", JSON.stringify([
+      { nom: "après-midi", debut: 14 * 60 + 50, fin: 16 * 60 + 50 },
+      { nom: "nuit", debut: 1 * 60 + 50, fin: 7 * 60 + 50 }
+    ]));
   }
 
-  const hcDiv = document.getElementById("heures-creuses-config");
-  heuresCreuses.forEach(({ nom, debut, fin }) => {
-    hcDiv.innerHTML += `
-      <div class="plage-hc">
-        <input class="nom-hc" value="${nom}" placeholder="Nom">
-        <input class="debut" type="time" value="${formatTime(debut)}">
-        <input class="fin" type="time" value="${formatTime(fin)}">
-      </div>`;
+  afficher();
+}
+
+function afficher() {
+  const appareils = JSON.parse(localStorage.getItem("appareils"));
+  const hc = JSON.parse(localStorage.getItem("heuresCreuses"));
+
+  const aDiv = document.getElementById("appareilsList");
+  aDiv.innerHTML = "";
+  Object.entries(appareils).forEach(([nom, val]) => {
+    aDiv.innerHTML += `${nom} – ${val.duree} min (${val.type})<br>`;
   });
-};
+
+  const hDiv = document.getElementById("heuresCreusesList");
+  hDiv.innerHTML = "";
+  hc.forEach(p => {
+    hDiv.innerHTML += `${p.nom}: ${formatHeure(p.debut)} – ${formatHeure(p.fin)}<br>`;
+  });
+}
+
+function ajouterAppareil() {
+  const nom = document.getElementById("nomAppareil").value;
+  const duree = parseInt(document.getElementById("dureeAppareil").value, 10);
+  const type = document.getElementById("typeAppareil").value;
+
+  if (!nom || !duree || !["debut", "fin"].includes(type)) return;
+
+  const appareils = JSON.parse(localStorage.getItem("appareils"));
+  appareils[nom] = { duree, type };
+  localStorage.setItem("appareils", JSON.stringify(appareils));
+  afficher();
+}
+
+function ajouterPlage() {
+  const debut = document.getElementById("debutHC").value;
+  const fin = document.getElementById("finHC").value;
+
+  if (!debut || !fin) return;
+
+  const heuresCreuses = JSON.parse(localStorage.getItem("heuresCreuses"));
+  heuresCreuses.push({ nom: "personnalisée", debut: toMinutes(debut), fin: toMinutes(fin) });
+  localStorage.setItem("heuresCreuses", JSON.stringify(heuresCreuses));
+  afficher();
+}
+
+function sauvegarder() {
+  alert("Configuration enregistrée !");
+}
+
+window.addEventListener("DOMContentLoaded", charger);
