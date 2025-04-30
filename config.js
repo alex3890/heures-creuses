@@ -1,10 +1,22 @@
-function chargerConfig() {
-  const appareils = JSON.parse(localStorage.getItem('appareils') || '{}');
-  const heuresCreuses = JSON.parse(localStorage.getItem('heuresCreuses') || '[]');
-  return { appareils, heuresCreuses };
+function getAppareils() {
+  return JSON.parse(localStorage.getItem("appareils")) || {
+    "seche-linge": { duree: 210, type: "fin" },
+    "lave-linge": { duree: 120, type: "debut" },
+    "lave-vaisselle": { duree: 210, type: "debut" }
+  };
 }
 
-function sauvegarder(appareils, heuresCreuses) {
-  localStorage.setItem('appareils', JSON.stringify(appareils));
-  localStorage.setItem('heuresCreuses', JSON.stringify(heuresCreuses));
+function saveAppareils(appareils) {
+  localStorage.setItem("appareils", JSON.stringify(appareils));
+}
+
+function getHeuresCreuses() {
+  return JSON.parse(localStorage.getItem("heuresCreuses")) || [
+    { nom: "après-midi", debut: 14 * 60 + 50, fin: 16 * 60 + 50 },
+    { nom: "nuit", debut: 1 * 60 + 50, fin: 7 * 60 + 50 }
+  ];
+}
+
+function saveHeuresCreuses(hc) {
+  localStorage.setItem("heuresCreuses", JSON.stringify(hc));
 }
