@@ -1,33 +1,27 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Optimisation Heures Creuses</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Optimiseur d'heures creuses</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Optimisation des Heures Creuses</h1>
-    <nav>
-      <a href="index.html">Accueil</a>
-      <a href="config.html">Configuration</a>
-    </nav>
-  </header>
-
-  <main>
-    <label for="horaire">Heure actuelle :</label>
-    <input type="time" id="horaire" />
-    <div id="heures-creuses"></div>
-
+  <h1>Optimiseur d'heures creuses EDF</h1>
+  <div class="box">
     <label for="appareil">Appareil :</label>
     <select id="appareil"></select>
 
+    <label for="horaire">Heure actuelle :</label>
+    <input type="time" id="horaire" step="300">
+
+    <div class="hc-info" id="hcInfo"></div>
+
     <button onclick="calculer()">Calculer</button>
     <div id="resultat"></div>
-  </main>
+    <a class="link" href="config.html">Configurer appareils et heures creuses</a>
+  </div>
 
-  <script src="config.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
