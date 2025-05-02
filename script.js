@@ -55,57 +55,40 @@ function calculer() {
   const { duree, type } = appareils[appareil];
   const nowMins = toMinutes(document.getElementById('horaire').value);
 
-  const plageHC = getProchainePlage(nowMins);
-  const hcStart = plageHC.debutAbs;
-  const hcEnd = plageHC.finAbs;
+  // Cherche si on est actuellement dans une plage HC
+  const plageActuelle = heuresCreuses.find(hc => {
+    const debut = hc.debut;
+    const fin = hc.fin > debut ? hc.fin : hc.fin + 1440;
+    const now = nowMins < debut ? nowMins + 1440 : nowMins;
+    return now >= debut && now < fin;
+  });
 
-  let meilleur = { heures: 0, tempsHC: 0 };
+  const plagePrincipale = plageActuelle || getProchainePlage(nowMins);
+  const debutHC = plagePrincipale.debut;
+  const finHC = plagePrincipale.fin;
 
-  let alternative = { heures: 0, tempsHC: 0 };
+  const debutAbs = debutHC + (debutHC <= nowMins ? 1440 : 0);
+  const finAbs = finHC + (finHC <= debutHC ? 1440 : 0) + (debutAbs >= 1440 ? 1440 : 0);
 
-  if (type === "fin") {
-    // Le cycle doit se terminer à une heure pleine <= hcEnd
-    for (let h = 1; h <= 24; h++) {
-      const finReelle = nowMins + h * 60;
-      const debutReel = finReelle - duree;
-      if (debutReel < nowMins) continue;
-      const tempsHC = Math.max(0, Math.min(finReelle, hcEnd) - Math.max(debutReel, hcStart));
-      if (tempsHC > meilleur.tempsHC) {
-        meilleur = {
-          heures: h,
-          tempsHC,
-          debut: debutReel % 1440,
-          fin: finReelle % 1440
-        };
+  let meilleur = { heures: -1, tempsHC: -1 };
+  let alternative = null;
+
+  function calculerMeilleur(hcStart, hcEnd) {
+    let meilleurLocal = { heures: -1, tempsHC: -1 };
+    for (let h = 0; h <= 24; h++) {
+      let debutReel, finReel;
+      if (type === "fin") {
+        finReel = nowMins + h * 60;
+        debutReel = finReel - duree;
+        if (debutReel < nowMins) continue;
+      } else {
+        debutReel = nowMins + h * 60;
+        finReel = debutReel + duree;
       }
-    }
 
-    // Vérifier la plage suivante
-    const plageSuivante = getProchainePlage(hcEnd + 1);
-    const hcStartSuivante = plageSuivante.debutAbs;
-    const hcEndSuivante = plageSuivante.finAbs;
-
-    for (let h = 1; h <= 24; h++) {
-      const finReelle = hcStartSuivante + h * 60;
-      const debutReel = finReelle - duree;
-      const tempsHC = Math.max(0, Math.min(finReelle, hcEndSuivante) - Math.max(debutReel, hcStartSuivante));
-      if (tempsHC > alternative.tempsHC) {
-        alternative = {
-          heures: h,
-          tempsHC,
-          debut: debutReel % 1440,
-          fin: finReelle % 1440
-        };
-      }
-    }
-  } else {
-    // Le cycle doit commencer à une heure pleine >= nowMins
-    for (let h = 1; h <= 24; h++) {
-      const debutReel = nowMins + h * 60;
-      const finReel = debutReel + duree;
       const tempsHC = Math.max(0, Math.min(finReel, hcEnd) - Math.max(debutReel, hcStart));
-      if (tempsHC > meilleur.tempsHC) {
-        meilleur = {
+      if (tempsHC > meilleurLocal.tempsHC) {
+        meilleurLocal = {
           heures: h,
           tempsHC,
           debut: debutReel % 1440,
@@ -113,62 +96,51 @@ function calculer() {
         };
       }
     }
-
-    // Vérifier la plage suivante
-    const plageSuivante = getProchainePlage(hcEnd + 1);
-    const hcStartSuivante = plageSuivante.debutAbs;
-    const hcEndSuivante = plageSuivante.finAbs;
-
-    for (let h = 1; h <= 24; h++) {
-      const debutReel = hcStartSuivante + h * 60;
-      const finReel = debutReel + duree;
-      const tempsHC = Math.max(0, Math.min(finReel, hcEndSuivante) - Math.max(debutReel, hcStartSuivante));
-      if (tempsHC > alternative.tempsHC) {
-        alternative = {
-          heures: h,
-          tempsHC,
-          debut: debutReel % 1440,
-          fin: finReel % 1440
-        };
-      }
-    }
+    return meilleurLocal;
   }
 
-  // N'afficher l'alternative que si elle est strictement meilleure
-  if (alternative.tempsHC > meilleur.tempsHC) {
-    afficherResultat(meilleur, appareil, plageHC, alternative);
-  } else {
-    afficherResultat(meilleur, appareil, plageHC);
+  // Proposition principale
+  meilleur = calculerMeilleur(debutAbs, finAbs);
+  plagePrincipale.debutAbs = debutAbs;
+  plagePrincipale.finAbs = finAbs;
+
+  // Proposition alternative (cycle suivant)
+  const prochainePlage = getProchainePlage(plagePrincipale.finAbs);
+  const debutAlt = prochainePlage.debut + 1440;
+  const finAlt = prochainePlage.fin + (prochainePlage.fin <= prochainePlage.debut ? 1440 : 0) + 1440;
+
+  const alt = calculerMeilleur(debutAlt, finAlt);
+  if (alt.tempsHC > meilleur.tempsHC) {
+    alternative = alt;
+    prochainePlage.debutAbs = debutAlt;
+    prochainePlage.finAbs = finAlt;
   }
+
+  afficherResultat(meilleur, appareil, plagePrincipale, alternative, prochainePlage);
 }
 
-function afficherResultat(resultat, appareil, plageHC, alternative) {
+function afficherResultat(resultat, appareil, plageHC, alternative, altPlage) {
   const res = document.getElementById('resultat');
   const dureeTotale = appareils[appareil].duree;
-  const taux = ((resultat.tempsHC / dureeTotale) * 100).toFixed(1);
 
   let html = `
-    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 8px; background-color: #f9f9f9;">
-      <b>Proposition principale</b><br>
-      Programmez <b>${resultat.heures}h</b><br>
+    <div style="border: 2px solid #4caf50; padding: 10px; margin-bottom: 10px;">
+      <b>Proposition principale : Programmez ${resultat.heures}h</b><br>
       Début : ${formatHeure(resultat.debut)}<br>
       Fin : ${formatHeure(resultat.fin)}<br>
-      <i>${taux}% du cycle en heures creuses</i><br>
+      <i>${((resultat.tempsHC / dureeTotale) * 100).toFixed(1)}% du cycle en heures creuses</i><br>
       <small>Plage ciblée : ${formatHeure(plageHC.debutAbs)} - ${formatHeure(plageHC.finAbs)}</small>
     </div>
   `;
 
-  // Afficher l'alternative uniquement si elle est strictement meilleure
-  if (alternative && alternative.tempsHC > resultat.tempsHC) {
-    const tauxAlternative = ((alternative.tempsHC / dureeTotale) * 100).toFixed(1);
+  if (alternative) {
     html += `
-      <div style="border: 1px solid #90caf9; padding: 10px; border-radius: 8px; background-color: #e3f2fd;">
-        <b>Proposition alternative (plus avantageuse en heures creuses)</b><br>
-        Programmez <b>${alternative.heures}h</b><br>
+      <div style="border: 2px dashed #2196f3; padding: 10px;">
+        <b>Alternative possible : Programmez ${alternative.heures}h</b><br>
         Début : ${formatHeure(alternative.debut)}<br>
         Fin : ${formatHeure(alternative.fin)}<br>
-        <i>${tauxAlternative}% du cycle en heures creuses</i><br>
-        <small>Plage suivante : ${formatHeure(plageHC.debutAbs)} - ${formatHeure(plageHC.finAbs)}</small>
+        <i>${((alternative.tempsHC / dureeTotale) * 100).toFixed(1)}% du cycle en heures creuses</i><br>
+        <small>Plage ciblée : ${formatHeure(altPlage.debutAbs)} - ${formatHeure(altPlage.finAbs)}</small>
       </div>
     `;
   }
