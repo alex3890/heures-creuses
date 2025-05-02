@@ -61,6 +61,8 @@ function calculer() {
 
   let meilleur = { heures: 0, tempsHC: 0 };
 
+  let alternative = { heures: 0, tempsHC: 0 };
+
   if (type === "fin") {
     // Le cycle doit se terminer à une heure pleine <= hcEnd
     for (let h = 1; h <= 24; h++) {
@@ -70,6 +72,25 @@ function calculer() {
       const tempsHC = Math.max(0, Math.min(finReelle, hcEnd) - Math.max(debutReel, hcStart));
       if (tempsHC > meilleur.tempsHC) {
         meilleur = {
+          heures: h,
+          tempsHC,
+          debut: debutReel % 1440,
+          fin: finReelle % 1440
+        };
+      }
+    }
+
+    // Vérifier la plage suivante
+    const plageSuivante = getProchainePlage(hcEnd + 1);
+    const hcStartSuivante = plageSuivante.debutAbs;
+    const hcEndSuivante = plageSuivante.finAbs;
+
+    for (let h = 1; h <= 24; h++) {
+      const finReelle = hcStartSuivante + h * 60;
+      const debutReel = finReelle - duree;
+      const tempsHC = Math.max(0, Math.min(finReelle, hcEndSuivante) - Math.max(debutReel, hcStartSuivante));
+      if (tempsHC > alternative.tempsHC) {
+        alternative = {
           heures: h,
           tempsHC,
           debut: debutReel % 1440,
@@ -92,23 +113,67 @@ function calculer() {
         };
       }
     }
+
+    // Vérifier la plage suivante
+    const plageSuivante = getProchainePlage(hcEnd + 1);
+    const hcStartSuivante = plageSuivante.debutAbs;
+    const hcEndSuivante = plageSuivante.finAbs;
+
+    for (let h = 1; h <= 24; h++) {
+      const debutReel = hcStartSuivante + h * 60;
+      const finReel = debutReel + duree;
+      const tempsHC = Math.max(0, Math.min(finReel, hcEndSuivante) - Math.max(debutReel, hcStartSuivante));
+      if (tempsHC > alternative.tempsHC) {
+        alternative = {
+          heures: h,
+          tempsHC,
+          debut: debutReel % 1440,
+          fin: finReel % 1440
+        };
+      }
+    }
   }
 
-  afficherResultat(meilleur, appareil, plageHC);
+  // N'afficher l'alternative que si elle est strictement meilleure
+  if (alternative.tempsHC > meilleur.tempsHC) {
+    afficherResultat(meilleur, appareil, plageHC, alternative);
+  } else {
+    afficherResultat(meilleur, appareil, plageHC);
+  }
 }
 
-function afficherResultat(resultat, appareil, plageHC) {
+function afficherResultat(resultat, appareil, plageHC, alternative) {
   const res = document.getElementById('resultat');
   const dureeTotale = appareils[appareil].duree;
   const taux = ((resultat.tempsHC / dureeTotale) * 100).toFixed(1);
 
-  res.innerHTML = resultat.tempsHC > 0 ? `
-    <b>Programmez ${resultat.heures}h</b><br>
-    Début : ${formatHeure(resultat.debut)}<br>
-    Fin : ${formatHeure(resultat.fin)}<br>
-    <i>${taux}% du cycle en heures creuses</i><br>
-    <small>Plage ciblée : ${formatHeure(plageHC.debutAbs)} - ${formatHeure(plageHC.finAbs)}</small>
-  ` : "Aucun créneau viable dans la prochaine plage HC";
+  let html = `
+    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 8px; background-color: #f9f9f9;">
+      <b>Proposition principale</b><br>
+      Programmez <b>${resultat.heures}h</b><br>
+      Début : ${formatHeure(resultat.debut)}<br>
+      Fin : ${formatHeure(resultat.fin)}<br>
+      <i>${taux}% du cycle en heures creuses</i><br>
+      <small>Plage ciblée : ${formatHeure(plageHC.debutAbs)} - ${formatHeure(plageHC.finAbs)}</small>
+    </div>
+  `;
+
+  // Afficher l'alternative uniquement si elle est strictement meilleure
+  if (alternative && alternative.tempsHC > resultat.tempsHC) {
+    const tauxAlternative = ((alternative.tempsHC / dureeTotale) * 100).toFixed(1);
+    html += `
+      <div style="border: 1px solid #90caf9; padding: 10px; border-radius: 8px; background-color: #e3f2fd;">
+        <b>Proposition alternative (plus avantageuse en heures creuses)</b><br>
+        Programmez <b>${alternative.heures}h</b><br>
+        Début : ${formatHeure(alternative.debut)}<br>
+        Fin : ${formatHeure(alternative.fin)}<br>
+        <i>${tauxAlternative}% du cycle en heures creuses</i><br>
+        <small>Plage suivante : ${formatHeure(plageHC.debutAbs)} - ${formatHeure(plageHC.finAbs)}</small>
+      </div>
+    `;
+  }
+
+  res.innerHTML = html;
 }
 
 function afficherHeuresCreuses() {
