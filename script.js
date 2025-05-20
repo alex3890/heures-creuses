@@ -184,7 +184,7 @@ function afficherResultat(resultat, config, plageHC, alternative) {
 
     let html = `<div style="background:#e0f7fa; padding:15px; border-radius:5px;">
         <div style="border:2px solid #0074D9; padding:10px; margin-bottom:10px;">
-            <b>Principale : Programmez ${decalageStr}</b><br>
+            <b>Programmez ${decalageStr}</b><br>
             Début : ${formatHeure(resultat.debut)}<br>
             Fin : ${formatHeure(resultat.fin)}<br>
             ${taux}% en heures creuses<br>
