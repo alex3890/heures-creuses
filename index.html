@@ -1,46 +1,51 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Optimiseur d'Heures Creuses EDF</title>
-  <link rel="stylesheet" href="style.css">
+    <title>Optimisation Heures Creuses</title>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
 </head>
 <body>
-  <header>
-    <h1>Optimiseur d'Heures Creuses EDF</h1>
-    <nav>
-      <a href="config.html">Configurer les appareils</a>
-    </nav>
-  </header>
+    <header>
+        <h1>Optimiseur d'Heures Creuses EDF</h1>
+    </header>
 
-  <main>
-    <div class="box">
-      <label for="appareil">Choisissez un appareil :</label>
-      <select id="appareil">
-        <option value="seche-linge">Sèche-linge (3h30, fin)</option>
-        <option value="lave-linge">Lave-linge (2h, début)</option>
-        <option value="lave-vaisselle">Lave-vaisselle (3h30, début)</option>
-      </select>
-      
-      <label for="horaire">Heure actuelle :</label>
-      <input type="time" id="horaire" step="300">
-      <!-- Affichage de l'heure actuelle -->
-<div id="current-time" style="margin-top: 10px; font-size: 16px;"></div>
+    <main>
+        
+        <label for="appareil">Appareil :</label>
+        <select id="appareil">
+            <option value="seche-linge">Sèche-linge</option>
+            <option value="lave-linge">Lave-linge</option>
+            <option value="lave-vaisselle">Lave-vaisselle</option>
+        </select>
 
-      <button onclick="calculer()">Calculer</button>
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 1rem;">
+            <label for="horaire">Heure actuelle :</label>
+            <input type="time" id="horaire" style="flex: 1;">
+            <button type="button" onclick="updateHeureActuelle()" title="Actualiser l'heure">⟳</button>
+        </div>
 
-      <div id="resultat"></div>
-      <div class="hc-info" id="hc-info">
-        <strong>Plages d'heures creuses :</strong>
-        <ul>
-          <li>Après-midi : 14h50 - 16h50</li>
-          <li>Nuit : 01h50 - 07h50</li>
-        </ul>
-      </div>
-    </div>
-  </main>
+        <button id="btn-calculer" style="margin-top: 1rem;">Calculer</button>
+        <div id="resultat"></div>
+		
+		<div class="hc-info">
+            <h3>Appareils disponibles</h3>
+            <ul>
+                <li>Sèche-Linge (3h23, fin, pas 1h)</li>
+                <li>Lave-Linge (1h, début, pas 10min)</li>
+                <li>Lave-vaisselle (3h30, début, pas 1h)</li>
+            </ul>
+        </div>
+		
+        <div class="hc-info">
+            <h3>Plages d'heures creuses</h3>
+            <ul>
+                <li>Après-midi : 14h50 - 16h50</li>
+                <li>Nuit : 01h50 - 07h50</li>
+            </ul>
+        </div>
+    </main>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
