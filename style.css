@@ -11,6 +11,7 @@ header {
     color: white;
     padding: 1rem;
     text-align: center;
+    margin: -20px -20px 20px -20px;
 }
 
 main {
@@ -21,17 +22,21 @@ main {
 .hc-info {
     background: #f1f1f1;
     padding: 1rem;
-    margin: 1rem 0;
+    margin: 1.5rem 0;
     border-left: 4px solid #0074D9;
+    border-radius: 8px;
 }
 
 button {
     background-color: #0074D9;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
+    padding: 12px 20px;
+    border-radius: 8px;
     cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 10px 0;
 }
 
 #resultat {
@@ -42,27 +47,46 @@ button {
 }
 
 input, select {
-    padding: 8px;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
-}
-
-/* Optimisation pour iPhone */
-body {
-    margin: 0;
-    padding: 0;
     width: 100%;
-    overflow-x: hidden; /* Empêche le défilement horizontal */
+    box-sizing: border-box;
+    margin: 8px 0;
+    font-size: 16px;
 }
 
-main {
-    padding: 1rem env(safe-area-inset-right) 1rem env(safe-area-inset-left);
+.time-input-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
     width: 100%;
-    box-sizing: border-box; /* Inclut padding dans la largeur */
 }
 
-/* Ajustement pour les champs de formulaire */
-input, select {
-    font-size: 16px; /* Empêche le zoom automatique iOS sur focus */
-    max-width: 100%;
+.refresh-button {
+    padding: 12px;
+    min-width: 44px;
+    height: 44px;
+}
+
+/* Correction mobile */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    #resultat div {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .time-input-container input[type="time"] {
+        min-width: 120px;
+    }
+    
+    #resultat b {
+        display: block;
+        white-space: normal;
+    }
 }
