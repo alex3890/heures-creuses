@@ -1,7 +1,7 @@
 // Configuration des plages et appareils
 let heuresCreuses = [
-    { nom: "après-midi", debut: "14:50", fin: "16:50" },
-    { nom: "nuit", debut: "01:50", fin: "07:50" }
+    { nom: "après-midi", debut: "14:04", fin: "16:04" },
+    { nom: "nuit", debut: "00:04", fin: "06:04" }
 ];
 
 let appareils = {
