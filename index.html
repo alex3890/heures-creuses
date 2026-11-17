@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Optimisation Heures Creuses</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0074D9">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,43 +15,53 @@
     </header>
 
     <main>
-        <div class="form-group">
-            <label for="appareil">Appareil :</label>
-            <select id="appareil">
-                <option value="seche-linge">Sèche-linge</option>
-                <option value="lave-linge">Lave-linge</option>
-                <option value="lave-vaisselle">Lave-vaisselle</option>
-            </select>
-        </div>
+        <section class="panneau">
+            <label for="appareil">Appareil</label>
+            <select id="appareil"></select>
 
-        <div class="form-group">
-            <label for="horaire">Heure actuelle :</label>
+            <label for="horaire">Heure actuelle</label>
             <div class="time-input-container">
                 <input type="time" id="horaire" required>
-                <button type="button" class="refresh-button" onclick="updateHeureActuelle()">⟳</button>
+                <button type="button" id="btn-maintenant" class="refresh-button" title="Revenir à l'heure actuelle" aria-label="Revenir à l'heure actuelle">⟳</button>
             </div>
-        </div>
+        </section>
 
-        <button id="btn-calculer" onclick="calculer()">Calculer</button>
+        <div id="resultat" aria-live="polite"></div>
 
-        <div id="resultat"></div>
+        <details class="hc-info">
+            <summary>⚙️ Réglages des appareils</summary>
+            <p class="aide">Modifications enregistrées automatiquement sur cet appareil.
+                « Départ différé » : vous programmez l'heure de début. « Fin différée » : vous programmez l'heure de fin (ex. sèche-linge).
+                La conso (kWh par cycle) sert à estimer le coût.</p>
+            <div id="editeur-appareils"></div>
+            <button type="button" id="btn-ajout-appareil" class="secondaire">+ Ajouter un appareil</button>
+        </details>
 
-        <div class="hc-info">
-            <h3>Appareils disponibles</h3>
-            <ul>
-                <li>Sèche-Linge (3h23, fin, pas 1h)</li>
-                <li>Lave-Linge (1h, début, pas 10min)</li>
-                <li>Lave-vaisselle (3h30, début, pas 1h)</li>
-            </ul>
-        </div>
+        <details class="hc-info">
+            <summary>🕒 Plages d'heures creuses</summary>
+            <div id="editeur-plages"></div>
+            <button type="button" id="btn-ajout-plage" class="secondaire">+ Ajouter une plage</button>
+        </details>
 
-        <div class="hc-info">
-            <h3>Plages d'heures creuses</h3>
-            <ul>
-                <li>Après-midi : 14h04 - 16h04</li>
-                <li>Nuit : 00h04 - 06h04</li>
-            </ul>
-        </div>
+        <details class="hc-info">
+            <summary>💶 Tarifs (€/kWh)</summary>
+            <div class="grille-2">
+                <label>Heures pleines<input type="number" id="prix-hp" step="0.001" min="0"></label>
+                <label>Heures creuses<input type="number" id="prix-hc" step="0.001" min="0"></label>
+            </div>
+        </details>
+
+        <details class="hc-info">
+            <summary>💾 Sauvegarde / transfert</summary>
+            <p class="aide">Les réglages sont stockés dans ce navigateur. Pour les copier sur un autre appareil : exportez, copiez le texte, puis importez-le là-bas.</p>
+            <textarea id="zone-json" rows="6" spellcheck="false"></textarea>
+            <div class="grille-2">
+                <button type="button" id="btn-export" class="secondaire">Exporter</button>
+                <button type="button" id="btn-import" class="secondaire">Importer</button>
+            </div>
+            <button type="button" id="btn-reset" class="danger">Réinitialiser les réglages</button>
+            <p id="msg-json" class="aide"></p>
+        </details>
     </main>
 
     <script src="script.js"></script>
