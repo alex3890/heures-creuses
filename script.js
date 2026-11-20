@@ -12,7 +12,7 @@ const DEFAUT = {
         { nom: 'Après-midi', debut: '14:04', fin: '16:04' },
         { nom: 'Nuit',       debut: '00:04', fin: '06:04' }
     ],
-    prix: { hp: 0.2231, hc: 0.1650 },
+    prix: { hp: 0.27, hc: 0.20 },
     selection: 'seche-linge'
 };
 
@@ -242,13 +242,22 @@ function majSelect() {
     sel.value = cfg.selection;
 }
 
+// Champ durée en heures + minutes (la valeur stockée reste en minutes)
+function champHM(nom, total) {
+    const h = Math.floor(total / 60), m = total % 60;
+    return `<div class="hm">
+        <input data-f="${nom}-h" type="number" inputmode="numeric" min="0" value="${h}" aria-label="heures"><span>h</span>
+        <input data-f="${nom}-m" type="number" inputmode="numeric" min="0" max="59" value="${m}" aria-label="minutes"><span>min</span>
+    </div>`;
+}
+
 function rendreAppareils() {
     $('editeur-appareils').innerHTML = cfg.appareils.map((a, i) => `
         <div class="ligne-edit" data-i="${i}">
             <input data-f="nom" value="${esc(a.nom)}" aria-label="Nom">
             <div class="grille-2">
-                <label>Durée (min)<input data-f="duree" type="number" min="1" value="${a.duree}"></label>
-                <label>Pas de programmation (min)<input data-f="pas" type="number" min="1" value="${a.pas}"></label>
+                <label>Durée${champHM('duree', a.duree)}</label>
+                <label>Pas de programmation${champHM('pas', a.pas)}</label>
                 <label>Réglage
                     <select data-f="type">
                         <option value="debut"${a.type === 'debut' ? ' selected' : ''}>Départ différé</option>
@@ -288,9 +297,24 @@ function changement(e) {
     if (!champ || !ligne) return;
     const i = Number(ligne.dataset.i);
     const cible = ligne.parentElement.id === 'editeur-appareils' ? cfg.appareils[i] : cfg.plages[i];
+
+    // Champs heures / minutes : on recalcule le total en minutes et on normalise l'affichage
+    const hm = champ.match(/^(duree|pas)-(h|m)$/);
+    if (hm) {
+        const base = hm[1];
+        const hEl = ligne.querySelector(`[data-f="${base}-h"]`);
+        const mEl = ligne.querySelector(`[data-f="${base}-m"]`);
+        const total = Math.max(1, (parseInt(hEl.value, 10) || 0) * 60 + (parseInt(mEl.value, 10) || 0));
+        cible[base] = total;
+        hEl.value = Math.floor(total / 60);
+        mEl.value = total % 60;
+        sauver();
+        calculer();
+        return;
+    }
+
     let v = e.target.value;
-    if (champ === 'duree' || champ === 'pas') v = Math.max(1, parseInt(v, 10) || cible[champ]);
-    else if (champ === 'conso') v = Math.max(0, parseFloat(v) || 0);
+    if (champ === 'conso') v = Math.max(0, parseFloat(v) || 0);
     else if ((champ === 'debut' || champ === 'fin') && !v) return;
     else if (champ === 'nom' && !v.trim()) v = cible.nom;
     cible[champ] = v;
