@@ -1,5 +1,5 @@
 // Service worker : fonctionne hors ligne, mais récupère toujours la version la plus récente quand le réseau est là.
-const CACHE = 'hc-v2';
+const CACHE = 'hc-v3';
 const FICHIERS = ['./', 'index.html', 'style.css', 'script.js', 'manifest.json', 'icon.svg'];
 
 self.addEventListener('install', e => {
@@ -17,7 +17,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
     if (e.request.method !== 'GET') return;
     e.respondWith(
-        fetch(e.request)
+        fetch(e.request, { cache: 'no-cache' })
             .then(rep => {
                 const copie = rep.clone();
                 caches.open(CACHE).then(c => c.put(e.request, copie));
