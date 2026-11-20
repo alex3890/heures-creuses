@@ -85,14 +85,22 @@ button.danger { background: transparent; color: var(--bad); border: 1px solid va
 .time-input-container { display: flex; gap: 10px; align-items: center; }
 .refresh-button { width: 52px; height: 46px; padding: 0; margin: 4px 0; flex: none; }
 
-.grille-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
-.grille-2 > * { min-width: 0; }
+.grille-2 { display: flex; flex-wrap: wrap; gap: 0 10px; }
+.grille-2 > * { flex: 1 1 calc(50% - 5px); min-width: 0; max-width: calc(50% - 5px); }
+.grille-2 > button { flex-basis: 100%; max-width: 100%; }
+.grille-2 input, .grille-2 select { max-width: 100%; }
+
+.hm { display: flex; align-items: center; gap: 6px; }
+.hm input { min-width: 0; flex: 1 1 0; padding: 11px 6px; text-align: center; }
+.hm span { color: var(--muted); font-size: 0.9rem; }
 
 /* Champs d'heure (iOS/Safari leur impose sinon une largeur minimale) */
 input[type="time"] {
     display: block;
+    width: 100%;
     min-width: 0;
     max-width: 100%;
+    inline-size: 100%;
     height: 46px;
     -webkit-appearance: none;
     appearance: none;
