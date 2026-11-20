@@ -7,7 +7,181 @@
     <meta name="theme-color" content="#0074D9">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="style.css?v=3">
+    <style>
+:root {
+    --bg: #f4f6f9;
+    --fg: #222;
+    --card: #fff;
+    --muted: #666;
+    --accent: #0074D9;
+    --border: #d9dde3;
+    --ok: #2e9e5b;
+    --mid: #e8a317;
+    --bad: #d64545;
+    --hc: rgba(46, 158, 91, 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #14181d;
+        --fg: #e8eaed;
+        --card: #1e242b;
+        --muted: #9aa3ad;
+        --border: #333b44;
+        --hc: rgba(46, 158, 91, 0.45);
+    }
+}
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    margin: 0;
+    padding: 0 14px 40px;
+    background: var(--bg);
+    color: var(--fg);
+}
+
+header {
+    background: var(--accent);
+    color: #fff;
+    padding: 0.8rem 1rem;
+    text-align: center;
+    margin: 0 -14px 18px;
+}
+header h1 { margin: 0; font-size: 1.25rem; }
+
+main { max-width: 640px; margin: 0 auto; }
+
+.panneau, .hc-info {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin: 0 0 14px;
+}
+
+.hc-info summary { cursor: pointer; font-weight: 600; }
+.hc-info[open] summary { margin-bottom: 10px; }
+
+label { display: block; font-size: 0.85rem; color: var(--muted); margin-top: 8px; }
+
+input, select, textarea {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin: 4px 0;
+    font-size: 16px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: inherit;
+}
+
+button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 11px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin: 6px 0;
+    font-size: 15px;
+}
+button.secondaire { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+button.danger { background: transparent; color: var(--bad); border: 1px solid var(--bad); }
+
+.time-input-container { display: flex; gap: 10px; align-items: center; }
+.refresh-button { width: 52px; height: 46px; padding: 0; margin: 4px 0; flex: none; }
+
+.grille-2 { display: flex; flex-wrap: wrap; gap: 0 10px; }
+.grille-2 > * { flex: 1 1 calc(50% - 5px); min-width: 0; max-width: calc(50% - 5px); }
+.grille-2 > button { flex-basis: 100%; max-width: 100%; }
+.grille-2 input, .grille-2 select { max-width: 100%; }
+
+.hm { display: flex; align-items: center; gap: 6px; }
+.hm input { min-width: 0; flex: 1 1 0; padding: 11px 6px; text-align: center; }
+.hm span { color: var(--muted); font-size: 0.9rem; }
+
+/* Champs d'heure (iOS/Safari leur impose sinon une largeur minimale) */
+input[type="time"] {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    inline-size: 100%;
+    height: 46px;
+    -webkit-appearance: none;
+    appearance: none;
+    text-align: left;
+}
+input[type="time"]::-webkit-date-and-time-value { text-align: left; min-width: 0; }
+.aide { font-size: 0.82rem; color: var(--muted); margin: 4px 0 10px; }
+
+.ligne-edit {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.ligne-edit .grille-2 { margin-top: 2px; }
+
+/* Résultats */
+.carte {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 6px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin: 0 0 12px;
+}
+.carte.ok { border-left-color: var(--ok); }
+.carte.mid { border-left-color: var(--mid); }
+.carte.bad { border-left-color: var(--bad); }
+.carte.principale { border-width: 2px; border-left-width: 6px; }
+.carte h3 { margin: 4px 0 6px; font-size: 1.05rem; }
+.carte p { margin: 4px 0; }
+
+.badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+}
+.badge.neutre { background: var(--muted); }
+
+.cout { color: var(--muted); font-size: 0.9rem; }
+.eco { color: var(--ok); font-weight: 600; }
+
+.frise {
+    position: relative;
+    height: 14px;
+    border-radius: 7px;
+    background: var(--border);
+    margin: 10px 0 2px;
+    overflow: hidden;
+}
+.frise .hc { position: absolute; top: 0; bottom: 0; background: var(--hc); }
+.frise .cycle {
+    position: absolute; top: 2px; bottom: 2px;
+    background: var(--accent);
+    border-radius: 5px;
+    opacity: 0.9;
+}
+.frise-legende {
+    display: flex; justify-content: space-between;
+    font-size: 0.7rem; color: var(--muted);
+}
+
+.vide { color: var(--muted); text-align: center; padding: 20px 0; }
+
+</style>
 </head>
 <body>
     <header>
@@ -78,6 +252,409 @@
         setTimeout(function () { if (!window.hcOk) hcErreur('Le script ne démarre pas (script.js absent, ancien ou incomplet).'); }, 1500);
     });
     </script>
-    <script src="script.js?v=3"></script>
+    <script>
+'use strict';
+
+/* ---------- Configuration par défaut (modifiable dans l'appli, stockée en localStorage) ---------- */
+const CLE = 'hc-config-v1';
+const DEFAUT = {
+    appareils: [
+        { id: 'seche-linge',    nom: 'Sèche-linge',    duree: 203, type: 'fin',   pas: 60, conso: 2.5 },
+        { id: 'lave-linge',     nom: 'Lave-linge',     duree: 60,  type: 'debut', pas: 10, conso: 1.0 },
+        { id: 'lave-vaisselle', nom: 'Lave-vaisselle', duree: 210, type: 'debut', pas: 60, conso: 1.2 }
+    ],
+    plages: [
+        { nom: 'Après-midi', debut: '14:04', fin: '16:04' },
+        { nom: 'Nuit',       debut: '00:04', fin: '06:04' }
+    ],
+    prix: { hp: 0.27, hc: 0.20 },
+    selection: 'seche-linge'
+};
+
+const $ = id => document.getElementById(id);
+const clone = o => JSON.parse(JSON.stringify(o));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function valider(r) {
+    if (!r || !Array.isArray(r.appareils) || !r.appareils.length || !Array.isArray(r.plages)) return null;
+    const base = clone(DEFAUT);
+    const appareils = r.appareils.map((a, i) => ({
+        id: String(a.id || 'app-' + i),
+        nom: String(a.nom || 'Appareil'),
+        duree: Math.max(1, parseInt(a.duree, 10) || 60),
+        type: a.type === 'fin' ? 'fin' : 'debut',
+        pas: Math.max(1, parseInt(a.pas, 10) || 30),
+        conso: Math.max(0, parseFloat(a.conso) || 0)
+    }));
+    const hhmm = /^\d{1,2}:\d{2}$/;
+    const plages = r.plages
+        .filter(p => p && hhmm.test(p.debut) && hhmm.test(p.fin))
+        .map(p => ({ nom: String(p.nom || 'Plage'), debut: p.debut, fin: p.fin }));
+    return {
+        appareils,
+        plages,
+        prix: { hp: parseFloat(r.prix && r.prix.hp) || base.prix.hp, hc: parseFloat(r.prix && r.prix.hc) || base.prix.hc },
+        selection: appareils.some(a => a.id === r.selection) ? r.selection : appareils[0].id
+    };
+}
+
+function charger() {
+    try {
+        const v = valider(JSON.parse(localStorage.getItem(CLE)));
+        if (v) return v;
+    } catch (e) { /* stockage indisponible ou JSON invalide */ }
+    return clone(DEFAUT);
+}
+
+function sauver() {
+    try { localStorage.setItem(CLE, JSON.stringify(cfg)); } catch (e) { /* ignoré */ }
+}
+
+let cfg = charger();
+let heureManuelle = false;
+
+/* ---------- Utilitaires de temps ---------- */
+function toMin(t) {
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+}
+
+function fmtHeure(mins) {
+    mins = ((mins % 1440) + 1440) % 1440;
+    return String(Math.floor(mins / 60)).padStart(2, '0') + 'h' + String(mins % 60).padStart(2, '0');
+}
+
+// Heure + indication du jour (t = minutes depuis aujourd'hui 00:00)
+function fmtAbs(t) {
+    const j = Math.floor(t / 1440);
+    return fmtHeure(t) + (j === 1 ? ' (demain)' : j >= 2 ? ` (+${j} j)` : '');
+}
+
+function fmtDuree(mins) {
+    const h = Math.floor(mins / 60), m = mins % 60;
+    if (h === 0) return m + ' min';
+    return m ? `${h}h${String(m).padStart(2, '0')}` : `${h}h`;
+}
+
+function heureLocale() {
+    const d = new Date();
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+
+function majHeure() {
+    $('horaire').value = heureLocale();
+}
+
+/* ---------- Moteur de calcul ---------- */
+// Plages sous forme [debut, fin[ en minutes, étendues sur plusieurs jours (j-1 à j+3)
+function plagesEtendues() {
+    const out = [];
+    for (let j = -1; j <= 3; j++) {
+        for (const p of cfg.plages) {
+            const d = toMin(p.debut), f = toMin(p.fin);
+            out.push([d + j * 1440, f + j * 1440 + (f <= d ? 1440 : 0)]);
+        }
+    }
+    return out;
+}
+
+// Prochaine plage d'heures creuses qui commence strictement après l'heure actuelle
+function prochainePlage(now) {
+    let best = null;
+    for (let j = 0; j <= 2; j++) {
+        for (const p of cfg.plages) {
+            const d = toMin(p.debut), f = toMin(p.fin);
+            const s = d + j * 1440, e = f + j * 1440 + (f <= d ? 1440 : 0);
+            if (s > now && (!best || s < best.s)) best = { nom: p.nom, s, e };
+        }
+    }
+    return best;
+}
+
+function recouvrement(debut, fin, plages) {
+    let total = 0;
+    for (const [s, e] of plages) total += Math.max(0, Math.min(fin, e) - Math.max(debut, s));
+    return total;
+}
+
+function candidats(app, now, plages) {
+    const liste = [];
+    const ajouter = (decalage, debut) => {
+        const fin = debut + app.duree;
+        const hc = recouvrement(debut, fin, plages);
+        liste.push({ decalage, debut, fin, hc, taux: hc / app.duree });
+    };
+    ajouter(0, now); // démarrage immédiat
+    for (let d = app.pas; d <= 1440; d += app.pas) {
+        if (app.type === 'fin') {
+            const debut = now + d - app.duree;
+            if (debut < now) continue;
+            ajouter(d, debut);
+        } else {
+            ajouter(d, now + d);
+        }
+    }
+    return liste;
+}
+
+function coutCycle(app, taux) {
+    if (!(app.conso > 0)) return null;
+    return app.conso * (taux * cfg.prix.hc + (1 - taux) * cfg.prix.hp);
+}
+
+const euro = v => v.toFixed(2).replace('.', ',') + ' €';
+
+/* ---------- Affichage ---------- */
+function frise(now, c, plages) {
+    const fenetre = 1440;
+    const pos = t => Math.min(100, Math.max(0, ((t - now) / fenetre) * 100));
+    let html = '<div class="frise">';
+    for (const [s, e] of plages) {
+        if (e <= now || s >= now + fenetre) continue;
+        html += `<div class="hc" style="left:${pos(s)}%;width:${pos(e) - pos(s)}%"></div>`;
+    }
+    html += `<div class="cycle" style="left:${pos(c.debut)}%;width:${Math.max(1, pos(c.fin) - pos(c.debut))}%"></div></div>`;
+    const reperes = [0, 6, 12, 18, 24].map(h => `<span>${fmtHeure(now + h * 60)}</span>`).join('');
+    return html + `<div class="frise-legende">${reperes}</div>`;
+}
+
+function carte(app, c, now, plages, badge, reference) {
+    const classe = c.taux >= 0.95 ? 'ok' : c.taux >= 0.5 ? 'mid' : 'bad';
+    let action;
+    if (c.decalage === 0) action = 'Démarrez maintenant';
+    else if (app.type === 'fin') action = `Programmez la fin dans ${fmtDuree(c.decalage)}`;
+    else action = `Programmez le départ dans ${fmtDuree(c.decalage)}`;
+
+    let cout = '';
+    const prix = coutCycle(app, c.taux);
+    if (prix !== null) {
+        cout = `<p class="cout">Coût estimé : ${euro(prix)}`;
+        const ref = coutCycle(app, reference.taux);
+        if (c !== reference && ref - prix > 0.005) cout += ` · <span class="eco">−${euro(ref - prix)} vs maintenant</span>`;
+        cout += '</p>';
+    }
+
+    return `<article class="carte ${classe}${badge.principal ? ' principale' : ''}">
+        <span class="badge${badge.principal ? '' : ' neutre'}">${esc(badge.texte)}</span>
+        <h3>${action}</h3>
+        <p>Début <b>${fmtAbs(c.debut)}</b> → Fin <b>${fmtAbs(c.fin)}</b></p>
+        <p>${String(Math.round(c.taux * 1000) / 10).replace('.', ',')} % en heures creuses (${fmtDuree(c.hc)} sur ${fmtDuree(app.duree)})</p>
+        ${badge.note ? `<p class="cout">${badge.note}</p>` : ''}
+        ${frise(now, c, plages)}
+        ${cout}
+    </article>`;
+}
+
+function calculer() {
+    const res = $('resultat');
+    const app = cfg.appareils.find(a => a.id === cfg.selection) || cfg.appareils[0];
+    if (!$('horaire').value) { res.innerHTML = '<p class="vide">Indiquez l\'heure actuelle.</p>'; return; }
+    if (!cfg.plages.length) { res.innerHTML = '<p class="vide">Ajoutez au moins une plage d\'heures creuses dans les réglages.</p>'; return; }
+
+    const now = toMin($('horaire').value);
+    const plages = plagesEtendues();
+    const liste = candidats(app, now, plages);
+    const maintenant = liste[0];
+
+    // Meilleur taux ; à égalité on garde le plus tôt (la liste est triée par décalage croissant)
+    const meilleur = liste.reduce((b, x) => (x.hc > b.hc ? x : b), liste[0]);
+
+    // Réglage visant la prochaine plage : celui qui y passe le plus de temps (le plus tôt à égalité)
+    const pn = prochainePlage(now);
+    let suivant = null, noteSuivant = '';
+    if (pn) {
+        const cible = [[pn.s, pn.e]];
+        let o = recouvrement(liste[0].debut, liste[0].fin, cible);
+        suivant = liste[0];
+        for (const x of liste) {
+            const ox = recouvrement(x.debut, x.fin, cible);
+            if (ox > o) { o = ox; suivant = x; }
+        }
+        noteSuivant = `Plage « ${esc(pn.nom)} » (${fmtAbs(pn.s)} – ${fmtHeure(pn.e)}) : ${fmtDuree(o)} de fonctionnement dedans`;
+    }
+
+    const cartes = [];
+    const vus = new Set();
+    const pousser = (c, texte, principal, note) => {
+        if (!c || vus.has(c)) return;
+        vus.add(c);
+        cartes.push(carte(app, c, now, plages, { texte, principal, note }, maintenant));
+    };
+    let labelMeilleur = 'Recommandé';
+    if (meilleur === maintenant) labelMeilleur += ' · maintenant';
+    if (meilleur === suivant) labelMeilleur += ' · prochaine plage';
+    pousser(meilleur, labelMeilleur, true, meilleur === suivant ? noteSuivant : '');
+    pousser(suivant, 'Prochaine plage', true, noteSuivant);
+    pousser(maintenant, 'Si vous lancez maintenant', false);
+
+    res.innerHTML = cartes.join('');
+}
+
+/* ---------- Éditeurs de réglages ---------- */
+function majSelect() {
+    const sel = $('appareil');
+    sel.innerHTML = cfg.appareils.map(a => `<option value="${esc(a.id)}">${esc(a.nom)}</option>`).join('');
+    sel.value = cfg.selection;
+}
+
+// Champ durée en heures + minutes (la valeur stockée reste en minutes)
+function champHM(nom, total) {
+    const h = Math.floor(total / 60), m = total % 60;
+    return `<div class="hm">
+        <input data-f="${nom}-h" type="number" inputmode="numeric" min="0" value="${h}" aria-label="heures"><span>h</span>
+        <input data-f="${nom}-m" type="number" inputmode="numeric" min="0" max="59" value="${m}" aria-label="minutes"><span>min</span>
+    </div>`;
+}
+
+function rendreAppareils() {
+    $('editeur-appareils').innerHTML = cfg.appareils.map((a, i) => `
+        <div class="ligne-edit" data-i="${i}">
+            <input data-f="nom" value="${esc(a.nom)}" aria-label="Nom">
+            <div class="grille-2">
+                <label>Durée${champHM('duree', a.duree)}</label>
+                <label>Pas de programmation${champHM('pas', a.pas)}</label>
+                <label>Réglage
+                    <select data-f="type">
+                        <option value="debut"${a.type === 'debut' ? ' selected' : ''}>Départ différé</option>
+                        <option value="fin"${a.type === 'fin' ? ' selected' : ''}>Fin différée</option>
+                    </select>
+                </label>
+                <label>Conso (kWh/cycle)<input data-f="conso" type="number" step="0.1" min="0" value="${a.conso}"></label>
+            </div>
+            <button type="button" class="danger" data-act="suppr">Supprimer</button>
+        </div>`).join('');
+}
+
+function rendrePlages() {
+    $('editeur-plages').innerHTML = cfg.plages.map((p, i) => `
+        <div class="ligne-edit" data-i="${i}">
+            <input data-f="nom" value="${esc(p.nom)}" aria-label="Nom de la plage">
+            <div class="grille-2">
+                <label>Début<input data-f="debut" type="time" value="${esc(p.debut)}"></label>
+                <label>Fin<input data-f="fin" type="time" value="${esc(p.fin)}"></label>
+            </div>
+            <button type="button" class="danger" data-act="suppr">Supprimer</button>
+        </div>`).join('') || '<p class="aide">Aucune plage définie.</p>';
+}
+
+function toutRendre() {
+    majSelect();
+    rendreAppareils();
+    rendrePlages();
+    $('prix-hp').value = cfg.prix.hp;
+    $('prix-hc').value = cfg.prix.hc;
+    calculer();
+}
+
+function changement(e) {
+    const champ = e.target.dataset.f;
+    const ligne = e.target.closest('.ligne-edit');
+    if (!champ || !ligne) return;
+    const i = Number(ligne.dataset.i);
+    const cible = ligne.parentElement.id === 'editeur-appareils' ? cfg.appareils[i] : cfg.plages[i];
+
+    // Champs heures / minutes : on recalcule le total en minutes et on normalise l'affichage
+    const hm = champ.match(/^(duree|pas)-(h|m)$/);
+    if (hm) {
+        const base = hm[1];
+        const hEl = ligne.querySelector(`[data-f="${base}-h"]`);
+        const mEl = ligne.querySelector(`[data-f="${base}-m"]`);
+        const total = Math.max(1, (parseInt(hEl.value, 10) || 0) * 60 + (parseInt(mEl.value, 10) || 0));
+        cible[base] = total;
+        hEl.value = Math.floor(total / 60);
+        mEl.value = total % 60;
+        sauver();
+        calculer();
+        return;
+    }
+
+    let v = e.target.value;
+    if (champ === 'conso') v = Math.max(0, parseFloat(v) || 0);
+    else if ((champ === 'debut' || champ === 'fin') && !v) return;
+    else if (champ === 'nom' && !v.trim()) v = cible.nom;
+    cible[champ] = v;
+    sauver();
+    majSelect();
+    calculer();
+}
+
+function suppression(e) {
+    if (e.target.dataset.act !== 'suppr') return;
+    const ligne = e.target.closest('.ligne-edit');
+    const i = Number(ligne.dataset.i);
+    if (ligne.parentElement.id === 'editeur-appareils') {
+        if (cfg.appareils.length === 1) { alert('Il faut garder au moins un appareil.'); return; }
+        cfg.appareils.splice(i, 1);
+        if (!cfg.appareils.some(a => a.id === cfg.selection)) cfg.selection = cfg.appareils[0].id;
+    } else {
+        cfg.plages.splice(i, 1);
+    }
+    sauver();
+    toutRendre();
+}
+
+function msg(t) { $('msg-json').textContent = t; }
+
+/* ---------- Initialisation ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+    window.hcOk = true;
+    majHeure();
+    toutRendre();
+
+    $('appareil').addEventListener('change', e => { cfg.selection = e.target.value; sauver(); calculer(); });
+    $('horaire').addEventListener('input', () => { heureManuelle = true; calculer(); });
+    $('btn-maintenant').addEventListener('click', () => { heureManuelle = false; majHeure(); calculer(); });
+
+    // L'heure suit l'horloge tant que vous ne l'avez pas modifiée à la main
+    setInterval(() => { if (!heureManuelle && document.visibilityState === 'visible') { majHeure(); calculer(); } }, 30000);
+    document.addEventListener('visibilitychange', () => { if (!heureManuelle && document.visibilityState === 'visible') { majHeure(); calculer(); } });
+
+    for (const id of ['editeur-appareils', 'editeur-plages']) {
+        $(id).addEventListener('change', changement);
+        $(id).addEventListener('click', suppression);
+    }
+
+    $('btn-ajout-appareil').addEventListener('click', () => {
+        cfg.appareils.push({ id: 'app-' + Date.now(), nom: 'Nouvel appareil', duree: 60, type: 'debut', pas: 30, conso: 0 });
+        sauver(); toutRendre();
+    });
+    $('btn-ajout-plage').addEventListener('click', () => {
+        cfg.plages.push({ nom: 'Nouvelle plage', debut: '12:00', fin: '14:00' });
+        sauver(); toutRendre();
+    });
+
+    for (const k of ['hp', 'hc']) {
+        $('prix-' + k).addEventListener('change', e => {
+            const v = parseFloat(e.target.value);
+            if (v >= 0) { cfg.prix[k] = v; sauver(); calculer(); }
+        });
+    }
+
+    $('btn-export').addEventListener('click', () => {
+        const txt = JSON.stringify(cfg, null, 2);
+        $('zone-json').value = txt;
+        if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => msg('Copié dans le presse-papiers.'), () => msg('Texte prêt à copier ci-dessus.'));
+        else msg('Texte prêt à copier ci-dessus.');
+    });
+    $('btn-import').addEventListener('click', () => {
+        try {
+            const v = valider(JSON.parse($('zone-json').value));
+            if (!v) throw new Error('format');
+            cfg = v; sauver(); toutRendre(); msg('Réglages importés.');
+        } catch (e) { msg('Import impossible : texte invalide.'); }
+    });
+    $('btn-reset').addEventListener('click', () => {
+        if (!confirm('Revenir aux réglages d\'origine ?')) return;
+        cfg = clone(DEFAUT); sauver(); toutRendre(); msg('Réglages réinitialisés.');
+    });
+
+    // Nettoyage : supprime d'anciens service workers / caches qui pourraient servir de vieux fichiers
+    try {
+        if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister())).catch(() => {});
+        if (window.caches) caches.keys().then(ks => ks.forEach(k => caches.delete(k))).catch(() => {});
+    } catch (e) { /* ignoré */ }
+});
+
+</script>
 </body>
 </html>
