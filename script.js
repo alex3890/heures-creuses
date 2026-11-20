@@ -342,6 +342,7 @@ function msg(t) { $('msg-json').textContent = t; }
 
 /* ---------- Initialisation ---------- */
 document.addEventListener('DOMContentLoaded', () => {
+    window.hcOk = true;
     majHeure();
     toutRendre();
 
