@@ -61,4 +61,23 @@
             </div>
             <button type="button" id="btn-reset" class="danger">Réinitialiser les réglages</button>
             <p id="msg-json" class="aide"></p>
-        
+        </details>
+    </main>
+
+    <script>
+    // Diagnostic : affiche l'erreur à l'écran si le script ne se charge pas ou plante
+    function hcErreur(t) {
+        var d = document.getElementById('resultat');
+        if (d) d.innerHTML = '<p class="vide">⚠️ ' + t + '</p>';
+    }
+    window.addEventListener('error', function (e) {
+        if (e.target && e.target.src) hcErreur('Fichier introuvable : ' + e.target.src.split('/').pop());
+        else hcErreur('Erreur : ' + e.message + ' (' + String(e.filename || '').split('/').pop() + ' ligne ' + e.lineno + ')');
+    }, true);
+    window.addEventListener('load', function () {
+        setTimeout(function () { if (!window.hcOk) hcErreur('Le script ne démarre pas (script.js absent, ancien ou incomplet).'); }, 1500);
+    });
+    </script>
+    <script src="script.js?v=3"></script>
+</body>
+</html>
